@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cách auto farm xu Lazi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .content-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 30px;
+            min-height: 300px;
+        }
+        .author-info {
+            display: flex;
+            align-items: center;
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .author-details {
+            flex-grow: 1;
+        }
+        .author-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        .author-link {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .author-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cách auto farm xu Lazi</h1>
+        </header>
+        
+        <div class="content-box">
+            <!-- Đây là nơi bạn sẽ thêm nội dung hướng dẫn -->
+            <h2>Bước 1: Chuẩn bị</h2>
+            <ol>
+                <li>Mở trình duyệt và truy cập trang web của Lazi.vn</li>
+                <li>Vào trang trắc nghiệm tri thức và chọn bất kỳ một câu hỏi nào đó (<a href="https://lazi.vn/survey" target="_blank">https://lazi.vn/survey</a>)</li>
+                <li>Bấm vào nút F12 để mở bảng điều khiển (Developer Tools) của trình duyệt</li>
+                <li>Chọn phần tử "Console" trong bảng điều khiển</li>
+                <li>Copy đoạn mã JavaScript sau vào ô Console và bấm Enter:</li>
+            </ol>
+            <pre>
+                <code>
+    localStorage.setItem('autoSurveyScript', `(function autoSurvey() {
+        const radios = Array.from(document.querySelectorAll('input[type="radio"]'))
+            .filter(r => r.offsetParent !== null);
+        
+        if (radios.length === 0) {
+            console.log("❌ Không tìm thấy đáp án, dừng lại.");
+            return;
+        }
+        
+        let previousAnswer = localStorage.getItem('lastAnswer');
+        if (previousAnswer) {
+            const savedAnswer = radios[previousAnswer];
+            savedAnswer.click();
+            console.log(\`✅ Đã chọn lại đáp án thứ \${parseInt(previousAnswer) + 1} từ lần trước.\`);
+        } else {
+            const randomIndex = Math.floor(Math.random() * radios.length);
+            radios[randomIndex].click();
+            localStorage.setItem('lastAnswer', randomIndex);
+            console.log(\`✅ Đã chọn đáp án ngẫu nhiên thứ \${randomIndex + 1}\`);
+        }
+        
+        setTimeout(() => {
+            const nextButton = document.querySelector('.link_next_survey');
+            if (nextButton) {
+                nextButton.click();
+                console.log("🚀 Đã bấm nút chuyển sang câu hỏi tiếp theo.");
+                setTimeout(autoSurvey, 2000);
+            } else {
+                console.log("❌ Không tìm thấy nút chuyển câu.");
+            }
+        }, 1000);
+    })();`);
+    console.log('📥 Mã đã được lưu vào localStorage với tên "autoSurveyScript".');
+                </code>
+            </pre>
+            <p>Sau đó ấn phím 'Ctrl+Shift+B', bạn sẽ thấy thanh công cụ hiện trên màn hình</p>
+            <p>Sau đó tạo một trang mới trong thanh công cụ đó (ấn chuột phải vào thanh công cụ, chọn tạo trang)</p>
+            <p>Thay mã URL mặc định thành mã sau:</p>
+            <pre>
+                <code>
+    javascript:(function() {
+        const script = localStorage.getItem('autoSurveyScript');
+        if (script) {
+            eval(script);
+            console.log('🚀 Mã tự động đã được thực thi!');
+        } else {
+            console.log('❌ Không tìm thấy mã trong localStorage!');
+        }
+    })();
+                </code>
+            </pre>
+            <p>Đổi tên là "autofamlazi"</p>
+            <h3>Như vậy khi bạn ấn vào trang vừa tạo thì trắc nghiệm tri thức sẽ được hoàn thành tự động nhưng còn bước nữa</h3>
+            <h3>Vì khi bạn nhấn thì nó mới chạy vì vậy để auto thật bạn phải tải autoclick về</h3>      
+            <h4>Tải về tại đây: <a href="https://download.com.vn/tai-gs-auto-clicker-85876" target="_blank">https://download.com.vn/tai-gs-auto-clicker-85876</a></h4>
+            <p>Sau khi tải xong bạn hãy bật nó lên và chỉnh thời gian nhấp chuột cho phù hợp</p>
+            <p>Chỉnh tọa độ khóa chuột để nó có thể nhấn chính xác vào trang mã autofamlazi vừa tạo</p>
+                <img src="https://cdn.lazi.vn/storage/uploads/lachat/images/single/2025/05/1746536195_lazi_839060.png" alt="Ảnh minh họa" style="max-width: 100%; height: auto; display: block; margin: 20px auto;">
+            </div>
+        
+        <div class="author-info">
+            <img src="https://cdn.lazi.vn/storage/uploads/users/avatar_thumb/1746536559_lazi_449875.png"">
+            <div class="author-details">
+                <div class="author-name">Tiến Nam Nguyễn</div>
+                <div>
+                    <a href="https://lazi.vn/user/tien-nam.nguyen20" target="_blank" class="author-link">Xem trang cá nhân Lazi</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
