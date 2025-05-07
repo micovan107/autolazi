@@ -217,39 +217,48 @@
                     <button class="copy-btn" onclick="copyCode(this, 'code1')">Sao chép</button>
                 </div>
                 <pre>
-                    <code id="code1">localStorage.setItem('autoSurveyScript', `(function autoSurvey() {
+                    <code id="code1">(function autoSurvey() {
+    // Tìm tất cả các nút radio đang hiển thị trên trang
     const radios = Array.from(document.querySelectorAll('input[type="radio"]'))
         .filter(r => r.offsetParent !== null);
     
+    // Kiểm tra xem có đáp án nào không
     if (radios.length === 0) {
         console.log("❌ Không tìm thấy đáp án, dừng lại.");
         return;
     }
     
+    // Kiểm tra xem có đáp án đã lưu trước đó không
     let previousAnswer = localStorage.getItem('lastAnswer');
-    if (previousAnswer) {
+    
+    // Nếu có đáp án đã lưu và đáp án đó vẫn tồn tại, chọn lại đáp án đó
+    if (previousAnswer !== null && radios[previousAnswer]) {
         const savedAnswer = radios[previousAnswer];
         savedAnswer.click();
-        console.log(\`✅ Đã chọn lại đáp án thứ \${parseInt(previousAnswer) + 1} từ lần trước.\`);
-    } else {
+        console.log(`✅ Đã chọn lại đáp án thứ ${parseInt(previousAnswer) + 1} từ lần trước.`);
+    } 
+    // Nếu không, chọn một đáp án ngẫu nhiên
+    else {
         const randomIndex = Math.floor(Math.random() * radios.length);
         radios[randomIndex].click();
         localStorage.setItem('lastAnswer', randomIndex);
-        console.log(\`✅ Đã chọn đáp án ngẫu nhiên thứ \${randomIndex + 1}\`);
+        console.log(`✅ Đã chọn đáp án ngẫu nhiên thứ ${randomIndex + 1}`);
     }
     
+    // Sau 1 giây, chuyển sang câu hỏi tiếp theo
     setTimeout(() => {
         const nextButton = document.querySelector('.link_next_survey');
         if (nextButton) {
             nextButton.click();
             console.log("🚀 Đã bấm nút chuyển sang câu hỏi tiếp theo.");
+            // Sau 2 giây, tiếp tục quá trình với câu hỏi mới
             setTimeout(autoSurvey, 2000);
         } else {
             console.log("❌ Không tìm thấy nút chuyển câu.");
         }
     }, 1000);
-})();`);
-console.log('📥 Mã đã được lưu vào localStorage với tên "autoSurveyScript".');</code>
+})();
+                    </code>
                 </pre>
             </div>
             </div>
