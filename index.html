@@ -48,6 +48,91 @@
             border-radius: 5px;
             margin-top: 30px;
         }
+        .code-container {
+            position: relative;
+            margin: 20px 0;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e8e8e8;
+            padding: 8px 15px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+        .copy-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .copy-btn:hover {
+            background-color: #2980b9;
+        }
+        .copy-btn.copied {
+            background-color: #27ae60;
+        }
+        pre {
+            margin: 0;
+            padding: 15px;
+            overflow-x: auto;
+            background-color: #f8f8f8;
+            border-radius: 0 0 6px 6px;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            display: block;
+            white-space: pre;
+        }
+        .step-container {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .btn-download {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin: 10px 0;
+        }
+        .btn-download:hover {
+            background-color: #219653;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .download-link {
+            margin: 15px 0;
+        }
+        h2 {
+            color: #2980b9;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+        ol li {
+            margin-bottom: 10px;
+        }
+        strong {
+            color: #e74c3c;
+        }
         .author-avatar {
             width: 60px;
             height: 60px;
@@ -87,6 +172,26 @@
             }
         }
     </style>
+    <script>
+        function copyCode(button, codeId) {
+            const codeElement = document.getElementById(codeId);
+            const textArea = document.createElement('textarea');
+            textArea.value = codeElement.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Hiệu ứng khi sao chép thành công
+            button.textContent = 'Đã sao chép!';
+            button.classList.add('copied');
+            
+            setTimeout(() => {
+                button.textContent = 'Sao chép';
+                button.classList.remove('copied');
+            }, 2000);
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -95,79 +200,114 @@
         </header>
         
         <div class="content-box">
-            <!-- Đây là nơi bạn sẽ thêm nội dung hướng dẫn -->
-            <h2>Bước 1: Chuẩn bị</h2>
-            <ol>
-                <li>Mở trình duyệt và truy cập trang web của Lazi.vn</li>
-                <li>Vào trang trắc nghiệm tri thức và chọn bất kỳ một câu hỏi nào đó (<a href="https://lazi.vn/survey" target="_blank">https://lazi.vn/survey</a>)</li>
-                <li>Bấm vào nút F12 để mở bảng điều khiển (Developer Tools) của trình duyệt</li>
-                <li>Chọn phần tử "Console" trong bảng điều khiển</li>
-                <li>Copy đoạn mã JavaScript sau vào ô Console và bấm Enter:</li>
-            </ol>
-            <pre>
-                <code>
-    localStorage.setItem('autoSurveyScript', `(function autoSurvey() {
-        const radios = Array.from(document.querySelectorAll('input[type="radio"]'))
-            .filter(r => r.offsetParent !== null);
-        
-        if (radios.length === 0) {
-            console.log("❌ Không tìm thấy đáp án, dừng lại.");
-            return;
-        }
-        
-        let previousAnswer = localStorage.getItem('lastAnswer');
-        if (previousAnswer) {
-            const savedAnswer = radios[previousAnswer];
-            savedAnswer.click();
-            console.log(\`✅ Đã chọn lại đáp án thứ \${parseInt(previousAnswer) + 1} từ lần trước.\`);
+            <!-- Nội dung hướng dẫn -->
+            <div class="step-container">
+                <h2>Bước 1: Chuẩn bị</h2>
+                <ol>
+                    <li>Mở trình duyệt và truy cập trang web của Lazi.vn</li>
+                    <li>Vào trang trắc nghiệm tri thức và chọn bất kỳ một câu hỏi nào đó (<a href="https://lazi.vn/survey" target="_blank">https://lazi.vn/survey</a>)</li>
+                    <li>Bấm vào nút F12 để mở bảng điều khiển (Developer Tools) của trình duyệt</li>
+                    <li>Chọn phần tử "Console" trong bảng điều khiển</li>
+                </ol>
+                <img src="https://cdn.lazi.vn/storage/uploads/lachat/images/single/2025/05/1746603396_lazi_356972.png" style="max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <p>Copy đoạn mã JavaScript sau vào ô Console và bấm Enter:</p>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Script 1: Lưu mã tự động vào localStorage</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code1')">Sao chép</button>
+                </div>
+                <pre>
+                    <code id="code1">localStorage.setItem('autoSurveyScript', `(function autoSurvey() {
+    const radios = Array.from(document.querySelectorAll('input[type="radio"]'))
+        .filter(r => r.offsetParent !== null);
+    
+    if (radios.length === 0) {
+        console.log("❌ Không tìm thấy đáp án, dừng lại.");
+        return;
+    }
+    
+    let previousAnswer = localStorage.getItem('lastAnswer');
+    if (previousAnswer) {
+        const savedAnswer = radios[previousAnswer];
+        savedAnswer.click();
+        console.log(\`✅ Đã chọn lại đáp án thứ \${parseInt(previousAnswer) + 1} từ lần trước.\`);
+    } else {
+        const randomIndex = Math.floor(Math.random() * radios.length);
+        radios[randomIndex].click();
+        localStorage.setItem('lastAnswer', randomIndex);
+        console.log(\`✅ Đã chọn đáp án ngẫu nhiên thứ \${randomIndex + 1}\`);
+    }
+    
+    setTimeout(() => {
+        const nextButton = document.querySelector('.link_next_survey');
+        if (nextButton) {
+            nextButton.click();
+            console.log("🚀 Đã bấm nút chuyển sang câu hỏi tiếp theo.");
+            setTimeout(autoSurvey, 2000);
         } else {
-            const randomIndex = Math.floor(Math.random() * radios.length);
-            radios[randomIndex].click();
-            localStorage.setItem('lastAnswer', randomIndex);
-            console.log(\`✅ Đã chọn đáp án ngẫu nhiên thứ \${randomIndex + 1}\`);
+            console.log("❌ Không tìm thấy nút chuyển câu.");
         }
-        
-        setTimeout(() => {
-            const nextButton = document.querySelector('.link_next_survey');
-            if (nextButton) {
-                nextButton.click();
-                console.log("🚀 Đã bấm nút chuyển sang câu hỏi tiếp theo.");
-                setTimeout(autoSurvey, 2000);
-            } else {
-                console.log("❌ Không tìm thấy nút chuyển câu.");
-            }
-        }, 1000);
-    })();`);
-    console.log('📥 Mã đã được lưu vào localStorage với tên "autoSurveyScript".');
-                </code>
-            </pre>
-            <p>Sau đó ấn phím 'Ctrl+Shift+B', bạn sẽ thấy thanh công cụ hiện trên màn hình</p>
-            <p>Sau đó tạo một trang mới trong thanh công cụ đó (ấn chuột phải vào thanh công cụ, chọn tạo trang)</p>
-            <p>Thay mã URL mặc định thành mã sau:</p>
-            <pre>
-                <code>
-    javascript:(function() {
-        const script = localStorage.getItem('autoSurveyScript');
-        if (script) {
-            eval(script);
-            console.log('🚀 Mã tự động đã được thực thi!');
-        } else {
-            console.log('❌ Không tìm thấy mã trong localStorage!');
-        }
-    })();
-                </code>
-            </pre>
-            <p>Đổi tên là "autofamlazi"</p>
-            <h3>Như vậy khi bạn ấn vào trang vừa tạo thì trắc nghiệm tri thức sẽ được hoàn thành tự động nhưng còn bước nữa</h3>
-            <h3>Vì khi bạn nhấn thì nó mới chạy vì vậy để auto thật bạn phải tải autoclick về</h3>      
-            <h4>Tải về tại đây: <a href="https://download.com.vn/tai-gs-auto-clicker-85876" target="_blank">https://download.com.vn/tai-gs-auto-clicker-85876</a></h4>
-            <p>Sau khi tải xong bạn hãy bật nó lên và chỉnh thời gian nhấp chuột cho phù hợp</p>
-            <p>Chỉnh tọa độ khóa chuột để nó có thể nhấn chính xác vào trang mã autofamlazi vừa tạo</p>
-                <img src="https://cdn.lazi.vn/storage/uploads/lachat/images/single/2025/05/1746536195_lazi_839060.png" alt="Ảnh minh họa" style="max-width: 100%; height: auto; display: block; margin: 20px auto;">
+    }, 1000);
+})();`);
+console.log('📥 Mã đã được lưu vào localStorage với tên "autoSurveyScript".');</code>
+                </pre>
+            </div>
+            </div>
+            
+            <div class="step-container">
+                <h2>Bước 2: Tạo bookmark trong thanh công cụ</h2>
+                <p>Sau đó ấn phím 'Ctrl+Shift+B', bạn sẽ thấy thanh công cụ hiện trên màn hình</p>
+                <img src="https://cdn.lazi.vn/storage/uploads/lachat/images/single/2025/05/1746603058_lazi_180879.png" style="max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <p>Sau đó tạo một trang mới trong thanh công cụ đó (ấn chuột phải vào thanh công cụ, chọn tạo trang)</p>
+                <img src="https://cdn.lazi.vn/storage/uploads/lachat/images/single/2025/05/1746603207_lazi_438503.png" style="max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <p>Thay mã URL mặc định thành mã sau:</p>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>Script 2: Mã URL cho thanh công cụ</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code2')">Sao chép</button>
+                </div>
+                <pre>
+                    <code id="code2">javascript:(function() {
+    const script = localStorage.getItem('autoSurveyScript');
+    if (script) {
+        eval(script);
+        console.log('🚀 Mã tự động đã được thực thi!');
+    } else {
+        console.log('❌ Không tìm thấy mã trong localStorage!');
+    }
+})();</code>
+                </pre>
+            </div>
+            <p>Đổi tên là "<strong>autofamlazi</strong>"</p>
+            <p>Khi bạn ấn vào bookmark vừa tạo, trắc nghiệm tri thức sẽ được hoàn thành tự động.</p>
+            </div>
+            
+            <div class="step-container">
+                <h2>Bước 3: Thiết lập Auto Clicker</h2>
+                <p>Để tự động hóa hoàn toàn quá trình, bạn cần tải phần mềm Auto Clicker:</p>
+                <p class="download-link"><a href="https://download.com.vn/tai-gs-auto-clicker-85876" target="_blank" class="btn-download">Tải GS Auto Clicker</a></p>
+                <p>Sau khi tải xong, hãy:</p>
+                <ol>
+                    <li>Bật Auto Clicker lên và chỉnh thời gian nhấp chuột cho phù hợp (khoảng 5-10 giây/lần)</li>
+                    <li>Chỉnh tọa độ khóa chuột để nó có thể nhấn chính xác vào bookmark "autofamlazi" vừa tạo</li>
+                </ol>
+                <img src="https://cdn.lazi.vn/storage/uploads/lachat/images/single/2025/05/1746536195_lazi_839060.png" alt="Ảnh minh họa" style="max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            </div>
+            
+            <div class="step-container">
+                <h2>Kết luận</h2>
+                <p>Với các bước trên, bạn đã thiết lập thành công hệ thống tự động farm xu trên Lazi. Hệ thống sẽ:</p>
+                <ul>
+                    <li>Tự động chọn đáp án ngẫu nhiên cho các câu hỏi trắc nghiệm</li>
+                    <li>Tự động chuyển sang câu hỏi tiếp theo</li>
+                    <li>Hoạt động liên tục nhờ Auto Clicker</li>
+                </ul>
+                <p>Lưu ý: Hãy sử dụng công cụ này một cách có trách nhiệm và không lạm dụng để tránh ảnh hưởng đến hệ thống của Lazi (Đùa đấy!)</p>
+                </p>
             </div>
         
         <div class="author-info">
-            <img src="https://cdn.lazi.vn/storage/uploads/users/avatar_thumb/1746536559_lazi_449875.png"">
+            <img src="https://cdn.lazi.vn/storage/uploads/users/avatar_thumb/1746536559_lazi_449875.png" class="author-avatar" alt="Avatar tác giả">
             <div class="author-details">
                 <div class="author-name">Tiến Nam Nguyễn</div>
                 <div>
