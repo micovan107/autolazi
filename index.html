@@ -173,23 +173,47 @@
         }
     </style>
     <script>
+        /**
+         * Hàm sao chép mã từ phần tử code vào clipboard
+         * @param {HTMLElement} button - Nút đã được nhấn
+         * @param {string} codeId - ID của phần tử code cần sao chép
+         */
         function copyCode(button, codeId) {
-            const codeElement = document.getElementById(codeId);
-            const textArea = document.createElement('textarea');
-            textArea.value = codeElement.textContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
-            // Hiệu ứng khi sao chép thành công
-            button.textContent = 'Đã sao chép!';
-            button.classList.add('copied');
-            
-            setTimeout(() => {
-                button.textContent = 'Sao chép';
-                button.classList.remove('copied');
-            }, 2000);
+            try {
+                // Tìm phần tử code theo ID
+                const codeElement = document.getElementById(codeId);
+                if (!codeElement) {
+                    console.error('Không tìm thấy phần tử code với ID:', codeId);
+                    return;
+                }
+                
+                // Tạo vùng văn bản tạm thời để sao chép
+                const textArea = document.createElement('textarea');
+                textArea.value = codeElement.textContent.trim(); // Loại bỏ khoảng trắng thừa
+                textArea.style.position = 'fixed'; // Tránh làm thay đổi bố cục trang
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                
+                // Chọn và sao chép văn bản
+                textArea.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // Hiệu ứng khi sao chép thành công
+                if (success) {
+                    button.textContent = 'Đã sao chép!';
+                    button.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        button.textContent = 'Sao chép';
+                        button.classList.remove('copied');
+                    }, 2000);
+                } else {
+                    console.error('Không thể sao chép mã, hãy thử lại');
+                }
+            } catch (error) {
+                console.error('Lỗi khi sao chép mã:', error);
+            }
         }
     </script>
 </head>
@@ -219,47 +243,52 @@
                     <button class="copy-btn" onclick="copyCode(this, 'code1')">Sao chép</button>
                 </div>
                 <pre>
-                    <code id="code1">(function autoSurvey() {
-    // Tìm tất cả các nút radio đang hiển thị trên trang
+                    <code id="code1">// Lưu mã tự động vào localStorage để sử dụng sau này
+localStorage.setItem('autoSurveyScript', `
+// Hàm tự động trả lời câu hỏi trắc nghiệm
+(function autoSurvey() {
+    // Tìm tất cả các nút radio (lựa chọn) đang hiển thị trên trang
     const radios = Array.from(document.querySelectorAll('input[type="radio"]'))
         .filter(r => r.offsetParent !== null);
     
-    // Kiểm tra xem có đáp án nào không
+    // Kiểm tra xem có tìm thấy lựa chọn nào không
     if (radios.length === 0) {
         console.log("❌ Không tìm thấy đáp án, dừng lại.");
         return;
     }
     
-    // Kiểm tra xem có đáp án đã lưu trước đó không
+    // Kiểm tra xem có đáp án đã chọn từ lần trước không
     let previousAnswer = localStorage.getItem('lastAnswer');
-    
-    // Nếu có đáp án đã lưu và đáp án đó vẫn tồn tại, chọn lại đáp án đó
     if (previousAnswer !== null && radios[previousAnswer]) {
-        const savedAnswer = radios[previousAnswer];
-        savedAnswer.click();
-        console.log(`✅ Đã chọn lại đáp án thứ ${parseInt(previousAnswer) + 1} từ lần trước.`);
-    } 
-    // Nếu không, chọn một đáp án ngẫu nhiên
-    else {
+        // Nếu có, chọn lại đáp án đó
+        radios[previousAnswer].click();
+        console.log(\`✅ Đã chọn lại đáp án thứ \${parseInt(previousAnswer) + 1} từ lần trước.\`);
+    } else {
+        // Nếu không, chọn ngẫu nhiên một đáp án
         const randomIndex = Math.floor(Math.random() * radios.length);
         radios[randomIndex].click();
         localStorage.setItem('lastAnswer', randomIndex);
-        console.log(`✅ Đã chọn đáp án ngẫu nhiên thứ ${randomIndex + 1}`);
+        console.log(\`✅ Đã chọn đáp án ngẫu nhiên thứ \${randomIndex + 1}\`);
     }
     
-    // Sau 1 giây, chuyển sang câu hỏi tiếp theo
+    // Đợi 1 giây rồi chuyển sang câu hỏi tiếp theo
     setTimeout(() => {
         const nextButton = document.querySelector('.link_next_survey');
         if (nextButton) {
             nextButton.click();
             console.log("🚀 Đã bấm nút chuyển sang câu hỏi tiếp theo.");
-            // Sau 2 giây, tiếp tục quá trình với câu hỏi mới
+            // Đợi 2 giây rồi tiếp tục quy trình với câu hỏi mới
             setTimeout(autoSurvey, 2000);
         } else {
             console.log("❌ Không tìm thấy nút chuyển câu.");
         }
     }, 1000);
 })();
+`);
+
+// Thông báo khi mã đã được lưu thành công
+console.log("✅ Mã autoSurvey đã được lưu vào localStorage!");
+
                     </code>
                 </pre>
             </div>
@@ -278,15 +307,10 @@
                     <button class="copy-btn" onclick="copyCode(this, 'code2')">Sao chép</button>
                 </div>
                 <pre>
-                    <code id="code2">javascript:(function() {
-    const script = localStorage.getItem('autoSurveyScript');
-    if (script) {
-        eval(script);
-        console.log('🚀 Mã tự động đã được thực thi!');
-    } else {
-        console.log('❌ Không tìm thấy mã trong localStorage!');
-    }
-})();</code>
+                    <code id="code2">
+javascript:(function(){eval(localStorage.getItem('autoSurveyScript'));})();
+
+                    </code>
                 </pre>
             </div>
             <p>Đổi tên là "<strong>autofamlazi</strong>"</p>
